@@ -33,18 +33,50 @@
         src: ../docker-compose.yml
         dest: "{{ app_dir }}/docker-compose.yml"
 
-    - name: Copy env files
+    - name: Create root .env
       copy:
-        src: "../{{ item }}"
-        dest: "{{ app_dir }}/{{ item }}"
-      loop:
-        - .env
-        - auth-service/.env
-        - product-service/.env
-        - order-service/.env
-        - user-profile-service/.env
-        - review-service/.env
-        - audit-service/.env
+        dest: "{{ app_dir }}/.env"
+        content: |
+          POSTGRES_USER={{ postgres_user }}
+          POSTGRES_PASSWORD={{ postgres_password }}
+          POSTGRES_DB={{ postgres_db }}
+
+    - name: Create auth-service .env
+      copy:
+        dest: "{{ app_dir }}/auth-service/.env"
+        content: |
+          DATABASE_URL={{ auth_database_url }}
+          SECRET_KEY={{ secret_key }}
+
+    - name: Create product-service .env
+      copy:
+        dest: "{{ app_dir }}/product-service/.env"
+        content: |
+          DATABASE_URL={{ product_database_url }}
+
+    - name: Create order-service .env
+      copy:
+        dest: "{{ app_dir }}/order-service/.env"
+        content: |
+          DATABASE_URL={{ order_database_url }}
+
+    - name: Create user-profile-service .env
+      copy:
+        dest: "{{ app_dir }}/user-profile-service/.env"
+        content: |
+          DATABASE_URL={{ user_profile_database_url }}
+
+    - name: Create review-service .env
+      copy:
+        dest: "{{ app_dir }}/review-service/.env"
+        content: |
+          DATABASE_URL={{ review_database_url }}
+
+    - name: Create audit-service .env
+      copy:
+        dest: "{{ app_dir }}/audit-service/.env"
+        content: |
+          DATABASE_URL={{ audit_database_url }}
 
     - name: Copy init SQL
       copy:

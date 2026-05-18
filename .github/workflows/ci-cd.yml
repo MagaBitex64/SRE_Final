@@ -131,7 +131,17 @@ jobs:
             -i ansible/inventory.ini \
             -e "image_tag=${IMAGE_TAG}" \
             -e "registry=${REGISTRY}" \
-            -e "image_prefix=${IMAGE_PREFIX}"
+            -e "image_prefix=${IMAGE_PREFIX}" \
+            -e "postgres_user=${{ secrets.POSTGRES_USER }}" \
+            -e "postgres_password=${{ secrets.POSTGRES_PASSWORD }}" \
+            -e "postgres_db=${{ secrets.POSTGRES_DB }}" \
+            -e "secret_key=${{ secrets.SECRET_KEY }}" \
+            -e "auth_database_url=${{ secrets.AUTH_DATABASE_URL }}" \
+            -e "product_database_url=${{ secrets.PRODUCT_DATABASE_URL }}" \
+            -e "order_database_url=${{ secrets.ORDER_DATABASE_URL }}" \
+            -e "user_profile_database_url=${{ secrets.USER_PROFILE_DATABASE_URL }}" \
+            -e "review_database_url=${{ secrets.REVIEW_DATABASE_URL }}" \
+            -e "audit_database_url=${{ secrets.AUDIT_DATABASE_URL }}"
 
       - name: Health check
         run: |
