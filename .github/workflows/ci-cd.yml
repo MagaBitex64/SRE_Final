@@ -139,7 +139,7 @@ jobs:
             -e "auth_database_url=${{ secrets.AUTH_DATABASE_URL }}" \
             -e "product_database_url=${{ secrets.PRODUCT_DATABASE_URL }}" \
             -e "order_database_url=${{ secrets.ORDER_DATABASE_URL }}" \
-            -e "user_profile_database_url=${{ secrets.USER_PROFILE_DATABASE_URL }}" \
+            -e "user_profile_database_url=${{ secrets.USER_DATABASE_URL }}" \
             -e "review_database_url=${{ secrets.REVIEW_DATABASE_URL }}" \
             -e "audit_database_url=${{ secrets.AUDIT_DATABASE_URL }}" \
             -e "github_actor=${{ github.actor }}" \
