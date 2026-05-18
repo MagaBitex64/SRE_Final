@@ -104,8 +104,8 @@
     - name: Log in to GitHub Container Registry
       command: >
         docker login ghcr.io
-        -u {{ lookup('env', 'GITHUB_ACTOR') }}
-        -p {{ lookup('env', 'GITHUB_TOKEN') }}
+        -u {{ github_actor }}
+        -p {{ github_token }}
       no_log: true
 
     - name: Pull latest images

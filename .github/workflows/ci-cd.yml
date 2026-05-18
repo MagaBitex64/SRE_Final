@@ -142,6 +142,8 @@ jobs:
             -e "user_profile_database_url=${{ secrets.USER_PROFILE_DATABASE_URL }}" \
             -e "review_database_url=${{ secrets.REVIEW_DATABASE_URL }}" \
             -e "audit_database_url=${{ secrets.AUDIT_DATABASE_URL }}"
+            -e "github_actor=${{ github.actor }}" \
+            -e "github_token=${{ secrets.GITHUB_TOKEN }}"
 
       - name: Health check
         run: |
