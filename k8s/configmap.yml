@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: app
+data:
+  AUTH_PORT: "3001"
+  PRODUCT_PORT: "3002"
+  ORDER_PORT: "3003"
+  USERPROFILE_PORT: "3004"
+  REVIEW_PORT: "3005"
+  AUDIT_PORT: "3006"

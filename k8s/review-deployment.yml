@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+    spec:
+      containers:
+        - name: review-service
+          image: microservices_project-review-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3005
+          env:
+            - name: REVIEW_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sre-secret
+                  key: REVIEW_DATABASE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service
+  namespace: app
+spec:
+  selector:
+    app: review-service
+  ports:
+    - port: 3005
+      targetPort: 3005

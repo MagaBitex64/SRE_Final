@@ -1,0 +1,98 @@
+---
+- name: Deploy Microservices
+  hosts: app_servers
+  become: true
+
+  vars:
+    app_dir: /opt/microservices
+    registry: "{{ registry | default('ghcr.io') }}"
+    image_prefix: "{{ image_prefix | default('myorg/microservices') }}"
+    image_tag: "{{ image_tag | default('latest') }}"
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name: [docker.io, docker-compose, curl]
+        state: present
+        update_cache: true
+
+    - name: Ensure Docker is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Create app directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy docker-compose file
+      copy:
+        src: ../docker-compose.yml
+        dest: "{{ app_dir }}/docker-compose.yml"
+
+    - name: Copy env files
+      copy:
+        src: "../{{ item }}"
+        dest: "{{ app_dir }}/{{ item }}"
+      loop:
+        - .env
+        - auth-service/.env
+        - product-service/.env
+        - order-service/.env
+        - user-profile-service/.env
+        - review-service/.env
+        - audit-service/.env
+
+    - name: Copy init SQL
+      copy:
+        src: ../init-db.sql
+        dest: "{{ app_dir }}/init-db.sql"
+
+    - name: Copy Prometheus config
+      copy:
+        src: ../prometheus/
+        dest: "{{ app_dir }}/prometheus/"
+
+    - name: Log in to GitHub Container Registry
+      command: >
+        docker login ghcr.io
+        -u {{ lookup('env', 'GITHUB_ACTOR') }}
+        -p {{ lookup('env', 'GITHUB_TOKEN') }}
+      no_log: true
+
+    - name: Pull latest images
+      command: >
+        docker pull {{ registry }}/{{ image_prefix }}-{{ item }}:{{ image_tag }}
+      loop:
+        - auth-service
+        - product-service
+        - order-service
+        - user-profile-service
+        - review-service
+        - audit-service
+        - frontend
+
+    - name: Update docker-compose to use registry images
+      replace:
+        path: "{{ app_dir }}/docker-compose.yml"
+        regexp: "build: ./{{ item }}"
+        replace: "image: {{ registry }}/{{ image_prefix }}-{{ item }}:{{ image_tag }}"
+      loop:
+        - auth-service
+        - product-service
+        - order-service
+        - user-profile-service
+        - review-service
+        - audit-service
+        - frontend
+
+    - name: Restart services
+      command: docker-compose up -d --remove-orphans
+      args:
+        chdir: "{{ app_dir }}"
+
+    - name: Clean up old images
+      command: docker image prune -f

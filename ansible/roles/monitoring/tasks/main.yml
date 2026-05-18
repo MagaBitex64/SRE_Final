@@ -1,0 +1,30 @@
+---
+- name: Check prometheus
+  shell: docker ps | grep prometheus
+  register: prometheus
+  ignore_errors: yes
+
+- name: Show prometheus status
+  debug:
+    var: prometheus.stdout
+
+- name: Check grafana
+  shell: docker ps | grep grafana
+  register: grafana
+  ignore_errors: yes
+
+- name: Show grafana status
+  debug:
+    var: grafana.stdout
+
+- name: Add health check cron
+  cron:
+    name: "Health Check"
+    minute: "*/5"
+    job: "/opt/sre-project/scripts/health-check.sh"
+
+- name: Add auto restart cron
+  cron:
+    name: "Auto Restart"
+    minute: "*/10"
+    job: "cd /opt/sre-project && docker compose up -d"

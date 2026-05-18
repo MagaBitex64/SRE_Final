@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-service
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: audit-service
+  template:
+    metadata:
+      labels:
+        app: audit-service
+    spec:
+      containers:
+        - name: audit-service
+          image: microservices_project-audit-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3006
+          env:
+            - name: AUDIT_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sre-secret
+                  key: AUDIT_DATABASE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-service
+  namespace: app
+spec:
+  selector:
+    app: audit-service
+  ports:
+    - port: 3006
+      targetPort: 3006

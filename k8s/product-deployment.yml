@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: microservices_project-product-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3002
+          env:
+            - name: PRODUCT_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sre-secret
+                  key: PRODUCT_DATABASE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: app
+spec:
+  selector:
+    app: product-service
+  ports:
+    - port: 3002
+      targetPort: 3002

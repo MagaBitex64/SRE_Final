@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Online Shop Platform</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">Online Store</span>
+  <span class="nav-link active" onclick="goTo('home')">Home</span>
+  <span class="nav-link" onclick="goTo('products')">Products</span>
+  <span class="nav-link" onclick="goTo('orders')">Orders</span>
+  <span class="nav-link" onclick="goTo('profile')">Profile</span>
+  <span class="nav-link" onclick="goTo('reviews')">Reviews</span>
+  <span class="nav-link" onclick="goTo('audit')">Audit</span>
+  <div class="nav-right">
+    <span class="badge-user" id="nav-user">Not logged in</span>
+    <button class="btn" id="nav-auth-btn" onclick="goTo('auth')">Login</button>
+  </div>
+</nav>
+
+<div class="page active" id="page-home">
+  <div class="card">
+    <h2>SERVICE HEALTH</h2>
+    <table>
+      <thead><tr><th>Service</th><th>Endpoint</th><th>Status</th></tr></thead>
+      <tbody id="health-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page" id="page-auth">
+  <div class="grid2">
+    <div class="card">
+      <h2>REGISTER</h2>
+      <input id="reg-user" placeholder="Username"/>
+      <input id="reg-pass" type="password" placeholder="Password"/>
+      <div class="btn-row">
+        <button class="btn primary" onclick="doRegister()">Register</button>
+      </div>
+      <div class="res" id="res-register"></div>
+    </div>
+    <div class="card">
+      <h2>LOGIN</h2>
+      <input id="log-user" placeholder="Username"/>
+      <input id="log-pass" type="password" placeholder="Password"/>
+      <div class="btn-row">
+        <button class="btn primary" onclick="doLogin()">Login</button>
+        <button class="btn danger" onclick="doLogout()">Logout</button>
+      </div>
+      <div class="res" id="res-login"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-products">
+  <div class="card">
+    <h2>ADD PRODUCT</h2>
+    <div class="grid2">
+      <input id="p-name" placeholder="Name"/>
+      <input id="p-price" placeholder="Price" type="number"/>
+    </div>
+    <input id="p-desc" placeholder="Description"/>
+    <input id="p-stock" placeholder="Stock" type="number"/>
+    <div class="btn-row">
+      <button class="btn primary" onclick="createProduct()">Add Product</button>
+      <button class="btn" onclick="loadProducts()">Refresh</button>
+    </div>
+    <div class="res" id="res-product"></div>
+  </div>
+  <div class="card">
+    <h2>PRODUCTS</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Stock</th></tr></thead>
+      <tbody id="products-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page" id="page-orders">
+  <div class="card">
+    <h2>CREATE ORDER</h2>
+    <div class="grid2">
+      <input id="o-uid" placeholder="User ID" type="number"/>
+      <input id="o-pid" placeholder="Product ID" type="number"/>
+    </div>
+    <div class="grid2">
+      <input id="o-qty" placeholder="Quantity" type="number"/>
+      <input id="o-price" placeholder="Total Price" type="number"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="createOrder()">Create Order</button>
+      <button class="btn" onclick="loadOrders()">Refresh</button>
+    </div>
+    <div class="res" id="res-order"></div>
+  </div>
+  <div class="card">
+    <h2>ORDERS</h2>
+    <table>
+      <thead><tr><th>ID</th><th>User</th><th>Product</th><th>Qty</th><th>Price</th><th>Status</th></tr></thead>
+      <tbody id="orders-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page" id="page-profile">
+  <div id="profile-locked" class="locked">
+    <h2>🔒 Access Restricted</h2>
+    <p>You must be logged in to view your profile.</p>
+    <button class="btn primary" onclick="goTo('auth')">Go to Login</button>
+  </div>
+  <div id="profile-content" style="display:none">
+    <div class="card">
+      <h2>MY PROFILE</h2>
+      <div id="profile-data"></div>
+    </div>
+    <div class="card">
+      <h2>UPDATE PROFILE</h2>
+      <input id="pr-fullname" placeholder="Full Name"/>
+      <input id="pr-email" placeholder="Email"/>
+      <input id="pr-phone" placeholder="Phone"/>
+      <div class="btn-row">
+        <button class="btn primary" onclick="saveProfile()">Save Profile</button>
+      </div>
+      <div class="res" id="res-profile"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-reviews">
+  <div class="card">
+    <h2>ADD REVIEW</h2>
+    <div class="grid2">
+      <input id="rv-uid" placeholder="User ID" type="number"/>
+      <input id="rv-pid" placeholder="Product ID" type="number"/>
+    </div>
+    <select id="rv-rating">
+      <option value="5">⭐⭐⭐⭐⭐ 5 - Excellent</option>
+      <option value="4">⭐⭐⭐⭐ 4 - Good</option>
+      <option value="3">⭐⭐⭐ 3 - Average</option>
+      <option value="2">⭐⭐ 2 - Poor</option>
+      <option value="1">⭐ 1 - Terrible</option>
+    </select>
+    <textarea id="rv-comment" placeholder="Comment..."></textarea>
+    <div class="btn-row">
+      <button class="btn primary" onclick="createReview()">Submit Review</button>
+      <button class="btn" onclick="loadReviews()">Refresh</button>
+    </div>
+    <div class="res" id="res-review"></div>
+  </div>
+  <div class="card">
+    <h2>ALL REVIEWS</h2>
+    <table>
+      <thead><tr><th>ID</th><th>User</th><th>Product</th><th>Rating</th><th>Comment</th></tr></thead>
+      <tbody id="reviews-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page" id="page-audit">
+  <div class="card">
+    <h2>LOG ACTION</h2>
+    <div class="grid2">
+      <input id="au-uid" placeholder="User ID (optional)" type="number"/>
+      <input id="au-service" placeholder="Service name"/>
+    </div>
+    <input id="au-action" placeholder="Action (e.g. LOGIN, CREATE_ORDER)"/>
+    <input id="au-details" placeholder="Details"/>
+    <div class="btn-row">
+      <button class="btn primary" onclick="createAudit()">Log Action</button>
+      <button class="btn" onclick="loadAudit()">Refresh</button>
+    </div>
+    <div class="res" id="res-audit"></div>
+  </div>
+  <div class="card">
+    <h2>AUDIT LOGS</h2>
+    <table>
+      <thead><tr><th>ID</th><th>User</th><th>Action</th><th>Service</th><th>Details</th><th>Time</th></tr></thead>
+      <tbody id="audit-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

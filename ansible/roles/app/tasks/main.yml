@@ -1,0 +1,22 @@
+---
+- name: Deploy with docker compose
+  shell: |
+    cd /opt/sre-project
+    docker-compose up -d
+
+- name: Create databases
+  shell: |
+    docker exec postgres psql -U postgres -c "CREATE DATABASE auth_db;" || true
+    docker exec postgres psql -U postgres -c "CREATE DATABASE product_db;" || true
+    docker exec postgres psql -U postgres -c "CREATE DATABASE order_db;" || true
+    docker exec postgres psql -U postgres -c "CREATE DATABASE userprofile_db;" || true
+    docker exec postgres psql -U postgres -c "CREATE DATABASE review_db;" || true
+    docker exec postgres psql -U postgres -c "CREATE DATABASE audit_db;" || true
+
+- name: Check containers
+  shell: docker ps
+  register: result
+
+- name: Show status
+  debug:
+    var: result.stdout_lines

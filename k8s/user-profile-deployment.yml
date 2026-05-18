@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-profile-service
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-profile-service
+  template:
+    metadata:
+      labels:
+        app: user-profile-service
+    spec:
+      containers:
+        - name: user-profile-service
+          image: microservices_project-user-profile-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3004
+          env:
+            - name: USER_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sre-secret
+                  key: USER_DATABASE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-profile-service
+  namespace: app
+spec:
+  selector:
+    app: user-profile-service
+  ports:
+    - port: 3004
+      targetPort: 3004
