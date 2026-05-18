@@ -134,6 +134,12 @@
         - audit-service
         - frontend
 
+    - name: Force remove conflicting containers
+      shell: |
+        docker rm -f node-exporter prometheus grafana 2>/dev/null || true
+        docker network rm microservices-net 2>/dev/null || true
+      ignore_errors: true
+
     - name: Stop existing services
       command: docker-compose down --remove-orphans
       args:
