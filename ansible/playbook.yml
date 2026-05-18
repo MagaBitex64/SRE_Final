@@ -58,38 +58,38 @@
       copy:
         dest: "{{ app_dir }}/auth-service/.env"
         content: |
-          DATABASE_URL={{ auth_database_url }}
+          AUTH_DATABASE_URL={{ auth_database_url }}
           SECRET_KEY={{ secret_key }}
 
     - name: Create product-service .env
       copy:
         dest: "{{ app_dir }}/product-service/.env"
         content: |
-          DATABASE_URL={{ product_database_url }}
+          PRODUCT_DATABASE_URL={{ product_database_url }}
 
     - name: Create order-service .env
       copy:
         dest: "{{ app_dir }}/order-service/.env"
         content: |
-          DATABASE_URL={{ order_database_url }}
+          ORDER_DATABASE_URL={{ order_database_url }}
 
     - name: Create user-profile-service .env
       copy:
         dest: "{{ app_dir }}/user-profile-service/.env"
         content: |
-          DATABASE_URL={{ user_profile_database_url }}
+          USER_DATABASE_URL={{ user_profile_database_url }}
 
     - name: Create review-service .env
       copy:
         dest: "{{ app_dir }}/review-service/.env"
         content: |
-          DATABASE_URL={{ review_database_url }}
+          REVIEW_DATABASE_URL={{ review_database_url }}
 
     - name: Create audit-service .env
       copy:
         dest: "{{ app_dir }}/audit-service/.env"
         content: |
-          DATABASE_URL={{ audit_database_url }}
+          AUDIT_DATABASE_URL={{ audit_database_url }}
 
     - name: Copy init SQL
       copy:
