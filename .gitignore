@@ -1,1 +1,4 @@
 .envminikube-linux-amd64
+terraform/terraform.tfvars
+terraform/*.tfstate
+terraform/*.tfstate.backup
