@@ -2,6 +2,7 @@ import os
 import asyncpg
 import hashlib
 import time
+import redis.asyncio as aioredis
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from jose import jwt, JWTError
@@ -45,7 +46,7 @@ REGISTER_COUNT = Counter(
 SECRET_KEY = os.getenv("SECRET_KEY")
 DATABASE_URL = os.getenv("AUTH_DATABASE_URL")
 pool = None
-
+redis_client = None
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -54,8 +55,9 @@ def verify_password(password: str, hashed: str) -> bool:
 
 @app.on_event("startup")
 async def startup():
-    global pool
+    global pool, redis_client
     pool = await asyncpg.create_pool(DATABASE_URL)
+    redis_client = await aioredis.from_url(os.getenv("REDIS_URL", "redis://redis:6379"))
     async with pool.acquire() as conn:
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
@@ -120,6 +122,7 @@ async def login(data: UserIn):
     LOGIN_SUCCESS.inc()
     REQUEST_COUNT.labels(method="POST", endpoint="/login", status="200").inc()
     REQUEST_LATENCY.labels(endpoint="/login").observe(time.time() - start)
+    await redis_client.setex(f"token:{row['id']}", 86400, token)
     return {"token": token}
 
 @app.post("/verify")
@@ -127,9 +130,22 @@ async def verify(data: TokenIn):
     start = time.time()
     try:
         payload = jwt.decode(data.token, SECRET_KEY, algorithms=["HS256"])
+        user_id = payload["sub"]
+        cached = await redis_client.get(f"token:{user_id}")
+        if not cached:
+            raise HTTPException(401, "Token expired or logged out")
         REQUEST_COUNT.labels(method="POST", endpoint="/verify", status="200").inc()
         REQUEST_LATENCY.labels(endpoint="/verify").observe(time.time() - start)
         return {"valid": True, "user": payload}
     except JWTError:
         REQUEST_COUNT.labels(method="POST", endpoint="/verify", status="401").inc()
+        raise HTTPException(401, "Invalid token")
+
+@app.post("/logout")
+async def logout(data: TokenIn):
+    try:
+        payload = jwt.decode(data.token, SECRET_KEY, algorithms=["HS256"])
+        await redis_client.delete(f"token:{payload['sub']}")
+        return {"message": "Logged out"}
+    except JWTError:
         raise HTTPException(401, "Invalid token")

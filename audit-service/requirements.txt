@@ -3,3 +3,4 @@ uvicorn==0.29.0
 asyncpg==0.29.0
 prometheus-fastapi-instrumentator==6.1.0
 python-dotenv==1.0.1
+motor==3.3.2
