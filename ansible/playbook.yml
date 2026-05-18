@@ -108,6 +108,13 @@
         -p {{ github_token }}
       no_log: true
 
+    - name: Force stop all containers
+      shell: |
+        docker stop $(docker ps -aq) 2>/dev/null || true
+        docker rm $(docker ps -aq) 2>/dev/null || true
+        docker network rm microservices-net 2>/dev/null || true
+      ignore_errors: true
+
     - name: Pull latest images
       command: >
         docker pull {{ registry }}/{{ image_prefix }}-{{ item }}:{{ image_tag }}
@@ -134,19 +141,7 @@
         - audit-service
         - frontend
 
-    - name: Force remove conflicting containers
-      shell: |
-        docker rm -f node-exporter prometheus grafana 2>/dev/null || true
-        docker network rm microservices-net 2>/dev/null || true
-      ignore_errors: true
-
-    - name: Stop existing services
-      command: docker-compose down --remove-orphans
-      args:
-        chdir: "{{ app_dir }}"
-      ignore_errors: true
-
-    - name: Restart services
+    - name: Start services
       command: docker-compose up -d
       args:
         chdir: "{{ app_dir }}"
