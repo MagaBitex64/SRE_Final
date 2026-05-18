@@ -134,8 +134,14 @@
         - audit-service
         - frontend
 
+    - name: Stop existing services
+      command: docker-compose down --remove-orphans
+      args:
+        chdir: "{{ app_dir }}"
+      ignore_errors: true
+
     - name: Restart services
-      command: docker-compose up -d --remove-orphans
+      command: docker-compose up -d
       args:
         chdir: "{{ app_dir }}"
 
