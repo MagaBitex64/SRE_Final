@@ -28,19 +28,6 @@
         state: directory
         mode: "0755"
 
-    - name: Create service directories
-      file:
-        path: "{{ app_dir }}/{{ item }}"
-        state: directory
-        mode: "0755"
-      loop:
-        - auth-service
-        - product-service
-        - order-service
-        - user-profile-service
-        - review-service
-        - audit-service
-
     - name: Copy docker-compose file
       copy:
         src: ../docker-compose.yml
