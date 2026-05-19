@@ -10,6 +10,14 @@
     image_tag: "{{ image_tag | default('latest') }}"
 
   tasks:
+    - name: Remove conflicting container runtimes
+      apt:
+        name:
+          - containerd
+          - runc
+          - containerd.io
+        state: absent
+
     - name: Install required packages
       apt:
         name: [docker.io, docker-compose, curl]
