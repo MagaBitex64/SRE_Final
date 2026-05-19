@@ -20,8 +20,11 @@
 
     - name: Install required packages
       apt:
-        name: [docker.io, docker-compose, curl]
-        state: present
+        name: 
+          - docker.io
+          - docker-compose-v2
+          - curl
+        state: latest
         update_cache: true
 
     - name: Ensure Docker is running
@@ -124,8 +127,7 @@
       ignore_errors: true
 
     - name: Pull latest images
-      command: >
-        docker pull {{ registry }}/{{ image_prefix }}-{{ item }}:{{ image_tag }}
+      command: "docker pull {{ (registry ~ '/' ~ image_prefix ~ '-' ~ item ~ ':' ~ image_tag) | lower }}"
       loop:
         - auth-service
         - product-service
@@ -139,7 +141,7 @@
       replace:
         path: "{{ app_dir }}/docker-compose.yml"
         regexp: "build: ./{{ item }}"
-        replace: "image: {{ registry }}/{{ image_prefix }}-{{ item }}:{{ image_tag }}"
+        replace: "image: {{ (registry ~ '/' ~ image_prefix ~ '-' ~ item ~ ':' ~ image_tag) | lower }}"
       loop:
         - auth-service
         - product-service
@@ -150,7 +152,7 @@
         - frontend
 
     - name: Start services
-      command: docker-compose up -d
+      command: docker compose up -d
       args:
         chdir: "{{ app_dir }}"
 
