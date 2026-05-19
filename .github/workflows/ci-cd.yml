@@ -85,12 +85,10 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy to DigitalOcean
+    name: Deploy to My VPS
     runs-on: ubuntu-latest
     needs: build-and-push
     environment: production
-    env:
-      TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
