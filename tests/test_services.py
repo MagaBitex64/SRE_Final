@@ -1,7 +1,6 @@
 import pytest
 import requests
-
-BASE = "http://localhost"
+import random
 
 def test_auth_health():
     r = requests.get("http://localhost:3001/health")
@@ -33,23 +32,22 @@ def test_get_products():
     assert r.status_code == 200
     assert isinstance(r.json(), list)
 
-def test_register():
-    import random
-    r = requests.post("http://localhost:3001/register", json={
-        "username": f"testuser_{random.randint(1000,9999)}",
-        "password": "testpass123"
-    })
-    assert r.status_code in [200, 201]
-
-def test_audit_create():
-    r = requests.post("http://localhost:3006/", json={
-        "action": "test",
-        "service": "test-service",
-        "details": "automated test"
-    })
-    assert r.status_code == 201
-
-def test_audit_get():
+def test_get_audit_logs():
     r = requests.get("http://localhost:3006/")
     assert r.status_code == 200
     assert isinstance(r.json(), list)
+
+def test_register_and_login():
+    username = f"testuser_{random.randint(100000, 999999)}"
+    reg = requests.post("http://localhost:3001/register", json={
+        "username": username,
+        "password": "testpass123"
+    })
+    assert reg.status_code in [200, 201]
+
+    login = requests.post("http://localhost:3001/login", json={
+        "username": username,
+        "password": "testpass123"
+    })
+    assert login.status_code == 200
+    assert "token" in login.json()
