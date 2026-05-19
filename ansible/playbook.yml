@@ -22,10 +22,21 @@
       apt:
         name: 
           - docker.io
-          - docker-compose-v2
           - curl
         state: latest
         update_cache: true
+
+    - name: Create Docker CLI plugins directory
+      file:
+        path: /usr/lib/docker/cli-plugins
+        state: directory
+        mode: "0755"
+
+    - name: Download Docker Compose V2
+      get_url:
+        url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64
+        dest: /usr/lib/docker/cli-plugins/docker-compose
+        mode: "0755"
 
     - name: Ensure Docker is running
       service:
